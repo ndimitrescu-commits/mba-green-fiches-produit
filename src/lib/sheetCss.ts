@@ -1,0 +1,74 @@
+// CSS for the product datasheet itself (the "sheet" — what gets rendered on
+// screen in the live preview / modal, and what gets turned into a PDF).
+//
+// IMPORTANT: this must stay visually identical to the validated prototype
+// (mba_fiches_produit.html). It is kept as a plain string (rather than a
+// regular .css/module import) so the exact same styles can be inlined into
+// the standalone HTML document handed to Puppeteer for server-side PDF
+// generation — guaranteeing "what you see in the preview is what gets
+// generated" per the brief.
+export const SHEET_CSS = `
+:root{
+  --sage:#a8a98d;
+  --sage-dark:#93947a;
+  --deepgreen:#2f4738;
+  --deepgreen-2:#3d5a48;
+  --cream:#f4f2ea;
+  --paper:#ffffff;
+  --ink:#2a2a24;
+  --ink-soft:#75745f;
+  --line:#dddac9;
+  --peach:#dfa276;
+  --shadow: 0 1px 2px rgba(42,42,36,.06), 0 6px 20px rgba(42,42,36,.06);
+}
+*{box-sizing:border-box;}
+.sheet{
+  width:794px; height:1123px; /* A4 @ 96dpi */
+  background:var(--paper); color:var(--ink); position:relative;
+  font-family:'Inter',sans-serif;
+  display:flex; flex-direction:column;
+}
+.sheet-header{
+  background:var(--sage); padding:26px 40px; display:flex; align-items:center; justify-content:space-between; gap:20px;
+}
+.sheet-brand{display:flex; align-items:center; gap:12px;}
+.sheet-brand .chip{width:34px;height:34px;background:var(--deepgreen); border-radius:6px; position:relative;}
+.sheet-brand .chip::after{content:"";position:absolute;inset:8px;border:2px solid var(--sage);border-radius:2px;}
+.sheet-brand .name{font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:24px; color:var(--deepgreen);}
+.sheet-titles{text-align:right;}
+.sheet-titles .fr{font-weight:700; font-size:13px; color:var(--deepgreen); text-transform:uppercase; letter-spacing:.3px;}
+.sheet-titles .en{font-size:11px; color:#4a4a3d; text-transform:uppercase; letter-spacing:.3px;}
+
+.sheet-body{flex:1; display:flex; padding:36px 40px; gap:34px;}
+.sheet-left{width:230px; flex-shrink:0; display:flex; flex-direction:column; gap:26px;}
+.sheet-imgbox{
+  border:3px solid var(--peach); border-radius:3px; padding:10px; height:170px;
+  display:flex; align-items:center; justify-content:center; background:#fbf9f4;
+}
+.sheet-imgbox img{max-width:100%; max-height:100%; object-fit:contain;}
+.sheet-imgbox .ph{font-size:10.5px; color:#b9b6a4; text-align:center; text-transform:uppercase; letter-spacing:.4px;}
+
+.sheet-navlabel .fr{font-weight:700; font-size:12px; color:var(--deepgreen); text-transform:uppercase; line-height:1.35;}
+.sheet-navlabel .en{font-size:10.5px; color:var(--ink-soft); margin-top:3px;}
+
+.sheet-right{flex:1; display:flex; flex-direction:column; gap:20px;}
+
+.idtable{border:1px solid var(--line); border-radius:4px; overflow:hidden;}
+.idrow{display:flex; font-size:11px; border-bottom:1px solid var(--line);}
+.idrow:last-child{border-bottom:none;}
+.idrow .k{width:58%; padding:8px 12px; color:var(--ink-soft); background:#faf9f4; border-right:1px solid var(--line);}
+.idrow .v{width:42%; padding:8px 12px; font-weight:600;}
+
+.specblock-title{font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.4px; color:var(--ink-soft); margin-bottom:6px; padding-bottom:4px; border-bottom:1px solid var(--line);}
+.specrow{display:flex; justify-content:space-between; font-size:11.5px; padding:3.5px 0;}
+.specrow .k{color:var(--ink-soft);}
+.specrow .v{font-weight:600;}
+
+.tolerance{font-size:10.5px; color:var(--ink-soft); border-top:1px solid var(--line); padding-top:10px; margin-top:auto;}
+
+.sheet-footer{
+  padding:16px 40px; border-top:2px solid var(--deepgreen); display:flex; justify-content:space-between; align-items:center;
+}
+.sheet-footer .url{font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:11px; color:var(--deepgreen); letter-spacing:.3px;}
+.sheet-footer .ref{font-size:9.5px; color:var(--ink-soft);}
+`;
