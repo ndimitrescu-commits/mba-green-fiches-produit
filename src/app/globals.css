@@ -34,14 +34,7 @@ header.appbar{
   padding:14px 28px;
 }
 .brand{display:flex; align-items:center; gap:10px;}
-.brand-chip{
-  width:26px;height:26px; background:var(--deepgreen); border-radius:5px;
-  position:relative; flex-shrink:0;
-}
-.brand-chip::after{
-  content:""; position:absolute; inset:6px; border:1.5px solid var(--sage);
-  border-radius:2px;
-}
+.brand svg{flex-shrink:0;}
 .brand-name{font-weight:600; font-size:17px; letter-spacing:.2px;}
 .brand-name sup{font-size:9px; font-weight:600;}
 .brand-sub{font-size:11px; color:var(--ink-soft); margin-left:2px; padding-left:12px; border-left:1px solid var(--line);}
