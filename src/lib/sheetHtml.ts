@@ -23,6 +23,7 @@ export function buildSheetHtml(d: ProductSheetData): string {
     : `<div class="ph">Visuel produit<br>à insérer</div>`;
 
   return `
+      <div class="sheet-header">
           <div class="sheet-brand"><img src="https://mba-green-fiches-produit.vercel.app/logo.png" alt="MBA Green" class="sheet-logo"/></div>
                   <div class="sheet-titles">
         <div class="fr">${esc(d.nameFr)}</div>
