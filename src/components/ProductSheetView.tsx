@@ -1,4 +1,5 @@
 import type { ProductSheetData } from "@/lib/types";
+import BrandMark from "@/components/BrandMark";
 
 function esc(v: string | null | undefined): string {
   return v === undefined || v === null || v === "" ? "—" : v;
@@ -18,7 +19,7 @@ export default function ProductSheetView({ data }: { data: ProductSheetData }) {
     <div className="sheet">
       <div className="sheet-header">
         <div className="sheet-brand">
-          <div className="chip" />
+                    <BrandMark size={34} />
           <div className="name">
             MBA Green<sup>™</sup>
           </div>
