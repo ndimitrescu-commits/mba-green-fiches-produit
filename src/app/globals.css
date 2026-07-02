@@ -34,7 +34,7 @@ header.appbar{
   padding:14px 28px;
 }
 .brand{display:flex; align-items:center; gap:10px;}
-.brand svg{flex-shrink:0;}
+.brand-logo{height:24px; width:auto; display:block;}
 .brand-name{font-weight:600; font-size:17px; letter-spacing:.2px;}
 .brand-name sup{font-size:9px; font-weight:600;}
 .brand-sub{font-size:11px; color:var(--ink-soft); margin-left:2px; padding-left:12px; border-left:1px solid var(--line);}
