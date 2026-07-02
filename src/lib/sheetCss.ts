@@ -32,8 +32,7 @@ export const SHEET_CSS = `
   background:var(--sage); padding:26px 40px; display:flex; align-items:center; justify-content:space-between; gap:20px;
 }
 .sheet-brand{display:flex; align-items:center; gap:12px;}
-.sheet-brand .chip{width:34px;height:34px;background:var(--deepgreen); border-radius:6px; position:relative;}
-.sheet-brand .chip::after{content:"";position:absolute;inset:8px;border:2px solid var(--sage);border-radius:2px;}
+.sheet-brand svg{flex-shrink:0;}
 .sheet-brand .name{font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:24px; color:var(--deepgreen);}
 .sheet-titles{text-align:right;}
 .sheet-titles .fr{font-weight:700; font-size:13px; color:var(--deepgreen); text-transform:uppercase; letter-spacing:.3px;}
