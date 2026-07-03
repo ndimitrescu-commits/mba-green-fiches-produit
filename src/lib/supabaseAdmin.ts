@@ -31,3 +31,5 @@ export function supabaseAdmin() {
 
 export const PRODUCT_IMAGES_BUCKET = "product-images";
 export const PRODUCT_PDFS_BUCKET = "product-sheet-pdfs";
+export const PRODUCT_DOCUMENTS_BUCKET = "product-documents";
+

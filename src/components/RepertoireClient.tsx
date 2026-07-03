@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { materialFamily, type ProductSheetData } from "@/lib/types";
 import ProductSheetView from "@/components/ProductSheetView";
+import ProductDocuments from "@/components/ProductDocuments";
 
 export default function RepertoireClient({
   initialSheets,
@@ -129,6 +130,7 @@ export default function RepertoireClient({
                 </span>
               )}
             </div>
+            <ProductDocuments skuRef={modalSheet.ref} />
           </div>
         </div>
       )}
@@ -168,3 +170,4 @@ function ScaledSheet({ data }: { data: ProductSheetData }) {
     </div>
   );
 }
+
