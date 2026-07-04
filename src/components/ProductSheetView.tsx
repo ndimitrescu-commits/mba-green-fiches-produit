@@ -1,5 +1,4 @@
 import type { ProductSheetData } from "@/lib/types";
-import BrandMark from "@/components/BrandMark";
 
 function esc(v: string | null | undefined): string {
   return v === undefined || v === null || v === "" ? "—" : v;
@@ -19,10 +18,7 @@ export default function ProductSheetView({ data }: { data: ProductSheetData }) {
     <div className="sheet">
       <div className="sheet-header">
         <div className="sheet-brand">
-                    <BrandMark size={34} />
-          <div className="name">
-            MBA Green<sup>™</sup>
-          </div>
+                              <img src="/logo.png" alt="MBA Green" className="sheet-logo" />
         </div>
         <div className="sheet-titles">
           <div className="fr">{esc(data.nameFr)}</div>

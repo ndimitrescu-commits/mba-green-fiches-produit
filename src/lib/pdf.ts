@@ -54,6 +54,7 @@ try {
   const page = await browser.newPage();
   await page.setViewport({ width: 794, height: 1123 });
   await page.setContent(buildHtmlDocument(data), { waitUntil: "load" });
+  await page.evaluate(() => Promise.all(Array.from(document.images).map((img) => img.complete ? Promise.resolve() : new Promise((res) => { img.onload = img.onerror = res; }))));
   const pdf = await page.pdf({
     width: "794px",
     height: "1123px",
