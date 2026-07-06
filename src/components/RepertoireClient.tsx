@@ -142,6 +142,14 @@ export default function RepertoireClient({
                   PDF indisponible
                 </span>
               )}
+              <a
+                className="btn"
+                href={`/api/sticker?ref=${encodeURIComponent(modalSheet.ref)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Télécharger le sticker
+              </a>
             </div>
             <ProductDocuments skuRef={modalSheet.ref} />
           </div>

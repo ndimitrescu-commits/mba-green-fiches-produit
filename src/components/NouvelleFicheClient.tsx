@@ -3,6 +3,7 @@
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { EMPTY_SHEET, type ProductSheetData } from "@/lib/types";
+import { PRODUCT_CATEGORIES } from "@/lib/productCategories";
 import ProductSheetView from "@/components/ProductSheetView";
 
 type Field = keyof ProductSheetData;
@@ -29,6 +30,34 @@ function Text({
         value={value}
         onChange={(e) => onChange(field, e.target.value)}
       />
+    </div>
+  );
+}
+
+function Select({
+  label,
+  field,
+  options,
+  value,
+  onChange,
+}: {
+  label: string;
+  field: Field;
+  options: { value: string; label: string }[];
+  value: string;
+  onChange: (field: Field, value: string) => void;
+}) {
+  return (
+    <div>
+      <label>{label}</label>
+      <select value={value} onChange={(e) => onChange(field, e.target.value)}>
+        <option value="">—</option>
+        {options.map((o) => (
+          <option key={o.value} value={o.value}>
+            {o.label}
+          </option>
+        ))}
+      </select>
     </div>
   );
 }
@@ -122,6 +151,15 @@ export default function NouvelleFicheClient() {
               </div>
               <div className="frow single">
                 <Text label="Code douanier" field="customCode" placeholder="48193000" value={data.customCode} onChange={set} />
+              </div>
+              <div className="frow single">
+                <Select
+                  label="Catégorie produit"
+                  field="category"
+                  options={PRODUCT_CATEGORIES}
+                  value={data.category}
+                  onChange={set}
+                />
               </div>
             </div>
 

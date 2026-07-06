@@ -10,6 +10,7 @@ export interface ProductSheetData {
   eanBox: string;
   eanUvc: string;
   customCode: string;
+  category: string;
 
   material: string;
   capacity: string;
@@ -51,6 +52,7 @@ export const EMPTY_SHEET: ProductSheetData = {
   eanBox: "",
   eanUvc: "",
   customCode: "",
+  category: "",
   material: "",
   capacity: "",
   height: "",
@@ -87,6 +89,7 @@ export interface ProductSheetRow {
   ean_box: string | null;
   ean_uvc: string | null;
   custom_code: string | null;
+  category: string | null;
   material: string | null;
   capacity: string | null;
   height: string | null;
@@ -125,6 +128,7 @@ export function rowToSheet(row: ProductSheetRow): ProductSheetData {
     eanBox: row.ean_box ?? "",
     eanUvc: row.ean_uvc ?? "",
     customCode: row.custom_code ?? "",
+    category: row.category ?? "",
     material: row.material ?? "",
     capacity: row.capacity ?? "",
     height: row.height ?? "",
@@ -163,6 +167,7 @@ export function sheetToInsertRow(d: ProductSheetData) {
     ean_box: d.eanBox || null,
     ean_uvc: d.eanUvc || null,
     custom_code: d.customCode || null,
+    category: d.category || null,
     material: d.material || null,
     capacity: d.capacity || null,
     height: d.height || null,
