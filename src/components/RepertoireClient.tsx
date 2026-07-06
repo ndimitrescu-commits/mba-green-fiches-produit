@@ -84,32 +84,31 @@ export default function RepertoireClient({
           : `${filtered.length} ${filtered.length > 1 ? "fiches trouvées" : "fiche trouvée"}`}
       </div>
 
-      <div className="grid">
-        {filtered.length === 0 ? (
-          <div className="empty">
-            <b>Aucun résultat</b>
-            Essayez une autre référence, un autre EAN ou une autre matière.
+      {filtered.length === 0 ? (
+        <div className="empty">
+          <b>Aucun résultat</b>
+          Essayez une autre référence, un autre EAN ou une autre matière.
+        </div>
+      ) : (
+        <div className="list">
+          <div className="list-row list-row-head">
+            <div className="col-ref">Référence</div>
+            <div className="col-name">Désignation</div>
+            <div className="col-ean">EAN carton</div>
+            <div className="col-material">Matière</div>
+            <div className="col-arrow" />
           </div>
-        ) : (
-          filtered.map((s) => (
-            <div className="card" key={s.id ?? s.ref} onClick={() => setModalSheet(s)}>
-              <div className="card-head">
-                <div className="dot" />
-                <div className="ref">{s.ref}</div>
-              </div>
-              <div className="card-body">
-                <div className="card-title">{s.nameFr}</div>
-              </div>
-              <div className="card-foot">
-                <div className="ean">
-                  EAN carton — <b>{s.eanBox || "—"}</b>
-                </div>
-                <div className="arrow">→</div>
-              </div>
+          {filtered.map((s) => (
+            <div className="list-row" key={s.id ?? s.ref} onClick={() => setModalSheet(s)}>
+              <div className="col-ref">{s.ref}</div>
+              <div className="col-name">{s.nameFr}</div>
+              <div className="col-ean">{s.eanBox || "—"}</div>
+              <div className="col-material">{s.material}</div>
+              <div className="col-arrow">→</div>
             </div>
-          ))
-        )}
-      </div>
+          ))}
+        </div>
+      )}
 
       {modalSheet && (
         <div
