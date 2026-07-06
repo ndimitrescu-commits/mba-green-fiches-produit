@@ -1,3 +1,8 @@
+#!/bin/bash
+set -e
+echo "Applying: wider/flatter lid icon..."
+
+cat > src/lib/productCategories.ts <<'FILEEOF'
 // Fixed list of product categories used to (a) let each SKU be tagged with
 // a product type in the "Nouvelle fiche" form, and (b) pick the matching
 // pictogram shown on the generated carton sticker (see stickerHtml.ts).
@@ -61,3 +66,8 @@ export function categoryIconSvg(category: string | null | undefined, size = 56):
 export function categoryLabel(category: string | null | undefined): string {
   return PRODUCT_CATEGORIES.find((c) => c.value === category)?.label ?? "Autre";
 }
+FILEEOF
+
+git add -A
+git status
+echo "Done. Review the diff, then: git commit -m \"Widen and flatten lid sticker icon\" && git push"
