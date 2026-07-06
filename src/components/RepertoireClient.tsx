@@ -99,17 +99,11 @@ export default function RepertoireClient({
               </div>
               <div className="card-body">
                 <div className="card-title">{s.nameFr}</div>
-                <div className="card-meta">
-                  <span>
-                    EAN carton — <b>{s.eanBox || "—"}</b>
-                  </span>
-                  <span>
-                    Dimensions carton — <b>{s.boxDim || "—"}</b>
-                  </span>
-                </div>
               </div>
               <div className="card-foot">
-                <div className="material">{s.material}</div>
+                <div className="ean">
+                  EAN carton — <b>{s.eanBox || "—"}</b>
+                </div>
                 <div className="arrow">→</div>
               </div>
             </div>
