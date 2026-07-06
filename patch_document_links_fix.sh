@@ -1,3 +1,8 @@
+#!/bin/bash
+set -e
+echo "Applying: fix broken links for externally-linked (Drive) documents..."
+
+cat > src/app/api/product-documents/route.ts <<'RTEOF'
 import { NextRequest, NextResponse } from "next/server";
 import { supabaseAdmin, PRODUCT_DOCUMENTS_BUCKET } from "@/lib/supabaseAdmin";
 import {
@@ -175,3 +180,8 @@ export async function DELETE(req: NextRequest) {
   return NextResponse.json({ ok: true });
 }
 
+RTEOF
+
+git add -A
+git status
+echo "Done. Review the diff, then: git commit -m \"Fix Drive-linked document URLs (was 404ing)\" && git push"
