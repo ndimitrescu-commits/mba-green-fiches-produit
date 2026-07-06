@@ -5,6 +5,18 @@ import { materialFamily, type ProductSheetData } from "@/lib/types";
 import ProductSheetView from "@/components/ProductSheetView";
 import ProductDocuments from "@/components/ProductDocuments";
 
+// Bulk-imported sheets link to the client's original Drive-hosted datasheet
+// PDF (pdf_url pointing at drive.google.com) rather than one we generated.
+// For those, show the actual original PDF as the preview instead of the
+// live A4 mockup (which is built from structured fields that are often
+// left blank for imported SKUs).
+function driveEmbedUrl(url: string | null | undefined): string | null {
+  if (!url) return null;
+  const match = url.match(/drive\.google\.com\/file\/d\/([^/]+)/);
+  if (!match) return null;
+  return `https://drive.google.com/file/d/${match[1]}/preview`;
+}
+
 export default function RepertoireClient({
   initialSheets,
   loadError,
@@ -117,7 +129,15 @@ export default function RepertoireClient({
               <button onClick={() => setModalSheet(null)}>✕</button>
             </div>
             <div className="sheet-scale-wrap">
-              <ScaledSheet data={modalSheet} />
+              {driveEmbedUrl(modalSheet.pdfUrl) ? (
+                <iframe
+                  src={driveEmbedUrl(modalSheet.pdfUrl) ?? undefined}
+                  className="original-pdf-frame"
+                  title={`Datasheet originale ${modalSheet.ref}`}
+                />
+              ) : (
+                <ScaledSheet data={modalSheet} />
+              )}
             </div>
             <div className="preview-actions">
               {modalSheet.pdfUrl ? (
