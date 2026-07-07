@@ -5,6 +5,12 @@ import { materialFamily, type ProductSheetData } from "@/lib/types";
 import ProductSheetView from "@/components/ProductSheetView";
 import ProductDocuments from "@/components/ProductDocuments";
 
+export interface RepertoireDoc {
+  category: string;
+  fileName: string;
+  url: string;
+}
+
 // Bulk-imported sheets link to the client's original Drive-hosted datasheet
 // PDF (pdf_url pointing at drive.google.com) rather than one we generated.
 // For those, show the actual original PDF as the preview instead of the
@@ -17,12 +23,52 @@ function driveEmbedUrl(url: string | null | undefined): string | null {
   return `https://drive.google.com/file/d/${match[1]}/preview`;
 }
 
+// BAT and stickers were never given their own category (see documentTypes.ts
+// — everything that isn't a datasheet/die cut/carton design falls under
+// "other"), so they're told apart here by keyword in the file name instead,
+// matching how the client actually names these files ("... BAT.pdf",
+// "... Sticker.pdf").
+function findDoc(
+  docs: RepertoireDoc[] | undefined,
+  predicate: (d: RepertoireDoc) => boolean
+): RepertoireDoc | undefined {
+  return docs?.find(predicate);
+}
+
+function docLinksFor(docs: RepertoireDoc[] | undefined) {
+  return {
+    datasheet: findDoc(docs, (d) => d.category === "technical_data_sheet"),
+    dieCut: findDoc(docs, (d) => d.category === "die_cut"),
+    carton: findDoc(docs, (d) => d.category === "carton_design"),
+    bat: findDoc(docs, (d) => d.category === "other" && /\bbat\b/i.test(d.fileName)),
+    sticker: findDoc(docs, (d) => d.category === "other" && /sticker/i.test(d.fileName)),
+  };
+}
+
+function DocLink({ doc }: { doc: RepertoireDoc | undefined }) {
+  if (!doc) return <span className="doc-link doc-link-empty">—</span>;
+  return (
+    <a
+      className="doc-link"
+      href={doc.url}
+      target="_blank"
+      rel="noopener noreferrer"
+      title={doc.fileName}
+      onClick={(e) => e.stopPropagation()}
+    >
+      ↓
+    </a>
+  );
+}
+
 export default function RepertoireClient({
   initialSheets,
   loadError,
+  documentsByRef,
 }: {
   initialSheets: ProductSheetData[];
   loadError: string | null;
+  documentsByRef?: Record<string, RepertoireDoc[]>;
 }) {
   const [sheets] = useState(initialSheets);
   const [search, setSearch] = useState("");
@@ -36,13 +82,15 @@ export default function RepertoireClient({
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
-    return sheets.filter((s) => {
-      const matchesChip = activeChip === "Toutes" || materialFamily(s.material) === activeChip;
-      if (!matchesChip) return false;
-      if (!q) return true;
-      const hay = [s.ref, s.nameFr, s.nameEn, s.eanBox, s.eanUvc, s.material].join(" ").toLowerCase();
-      return hay.includes(q);
-    });
+    return sheets
+      .filter((s) => {
+        const matchesChip = activeChip === "Toutes" || materialFamily(s.material) === activeChip;
+        if (!matchesChip) return false;
+        if (!q) return true;
+        const hay = [s.ref, s.nameFr, s.nameEn, s.eanBox, s.eanUvc, s.material].join(" ").toLowerCase();
+        return hay.includes(q);
+      })
+      .sort((a, b) => a.ref.localeCompare(b.ref, undefined, { numeric: true, sensitivity: "base" }));
   }, [sheets, search, activeChip]);
 
   return (
@@ -96,17 +144,30 @@ export default function RepertoireClient({
             <div className="col-name">Désignation</div>
             <div className="col-ean">EAN carton</div>
             <div className="col-material">Matière</div>
+            <div className="col-doc">Datasheet</div>
+            <div className="col-doc">Die cut</div>
+            <div className="col-doc">Carton</div>
+            <div className="col-doc">BAT</div>
+            <div className="col-doc">Sticker</div>
             <div className="col-arrow" />
           </div>
-          {filtered.map((s) => (
-            <div className="list-row" key={s.id ?? s.ref} onClick={() => setModalSheet(s)}>
-              <div className="col-ref">{s.ref}</div>
-              <div className="col-name">{s.nameFr}</div>
-              <div className="col-ean">{s.eanBox || "—"}</div>
-              <div className="col-material">{s.material}</div>
-              <div className="col-arrow">→</div>
-            </div>
-          ))}
+          {filtered.map((s) => {
+            const links = docLinksFor(documentsByRef?.[s.ref]);
+            return (
+              <div className="list-row" key={s.id ?? s.ref} onClick={() => setModalSheet(s)}>
+                <div className="col-ref">{s.ref}</div>
+                <div className="col-name">{s.nameFr}</div>
+                <div className="col-ean">{s.eanBox || "—"}</div>
+                <div className="col-material">{s.material}</div>
+                <div className="col-doc"><DocLink doc={links.datasheet} /></div>
+                <div className="col-doc"><DocLink doc={links.dieCut} /></div>
+                <div className="col-doc"><DocLink doc={links.carton} /></div>
+                <div className="col-doc"><DocLink doc={links.bat} /></div>
+                <div className="col-doc"><DocLink doc={links.sticker} /></div>
+                <div className="col-arrow">→</div>
+              </div>
+            );
+          })}
         </div>
       )}
 
@@ -191,4 +252,3 @@ function ScaledSheet({ data }: { data: ProductSheetData }) {
     </div>
   );
 }
-
