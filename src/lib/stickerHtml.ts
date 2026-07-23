@@ -8,15 +8,30 @@ function esc(v: string | null | undefined): string {
 
 // Product dimensions on the sticker come from the product's own
 // height/width/diameter/length fields (not the box/carton dimensions,
-// which are a separate, larger measurement) — best-effort composition
-// since not every SKU has every one of these filled in.
+// which are a separate, larger measurement). Every field that's actually
+// filled in gets shown — e.g. a square sticker with only height + length
+// set should read "40 x 40", not silently drop the length because height
+// was already present.
 function productDimensionsLabel(d: ProductSheetData): string {
   const parts: string[] = [];
   if (d.diameter) parts.push(`Ø${d.diameter}`);
   if (d.height) parts.push(d.height);
-  if (!d.diameter && d.width) parts.push(d.width);
-  if (!d.height && !d.width && d.length) parts.push(d.length);
+  if (d.width) parts.push(d.width);
+  if (d.length) parts.push(d.length);
   return parts.length ? parts.join(" x ") : "—";
+}
+
+// The SKU / items-per-pack cells sit side by side in a fixed-width column,
+// so a long reference (e.g. "STICK01SKRSTY") can overflow and get clipped.
+// Rather than truncate it with an ellipsis (illegible on a physical label),
+// shrink the font just enough to keep the full value on one line.
+function fitValueFontSize(text: string): number {
+  const len = (text || "").length;
+  if (len <= 9) return 26;
+  if (len <= 12) return 21;
+  if (len <= 15) return 17;
+  if (len <= 18) return 14;
+  return 12;
 }
 
 // MBA Green mark for the sticker footer — built as plain SVG (shape + <text>)
@@ -51,8 +66,8 @@ export function buildStickerHtml(d: ProductSheetData): string {
       <div class="sticker-icon">${categoryIconSvg(d.category, 92)}</div>
       <div class="sticker-info">
         <div class="sticker-row sticker-row-split">
-          <div class="sticker-cell"><div class="k">SKU:</div><div class="v">${esc(d.ref)}</div></div>
-          <div class="sticker-cell"><div class="k">Items per pack:</div><div class="v">${esc(d.unitsPerBox)}</div></div>
+          <div class="sticker-cell"><div class="k">SKU:</div><div class="v" style="font-size:${fitValueFontSize(d.ref)}px">${esc(d.ref)}</div></div>
+          <div class="sticker-cell"><div class="k">Items per pack:</div><div class="v" style="font-size:${fitValueFontSize(d.unitsPerBox)}px">${esc(d.unitsPerBox)}</div></div>
         </div>
         <div class="sticker-row">
           <div class="k">EAN 13:</div><div class="v">${esc(d.eanBox)}</div>
