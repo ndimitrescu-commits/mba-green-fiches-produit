@@ -238,6 +238,9 @@ export default function RepertoireClient({
               >
                 Télécharger le sticker
               </a>
+              <a className="btn" href={`/nouvelle-fiche?ref=${encodeURIComponent(modalSheet.ref)}`}>
+                Modifier cette fiche
+              </a>
             </div>
             <ProductDocuments skuRef={modalSheet.ref} />
           </div>

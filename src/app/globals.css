@@ -144,6 +144,8 @@ input[type=text], input[type=number], textarea, select{
   outline:none; transition:border-color .15s, background .15s;
 }
 input:focus, textarea:focus, select:focus{border-color:var(--sage-dark); background:var(--paper);}
+input:disabled, select:disabled{background:var(--line); color:var(--ink-soft); cursor:not-allowed;}
+.field-hint{font-size:11px; color:var(--ink-soft); margin-top:3px;}
 textarea{resize:vertical; min-height:40px;}
 
 .imgpick{

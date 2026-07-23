@@ -14,12 +14,16 @@ function Text({
   placeholder,
   value,
   onChange,
+  disabled,
+  hint,
 }: {
   label: string;
   field: Field;
   placeholder?: string;
   value: string;
   onChange: (field: Field, value: string) => void;
+  disabled?: boolean;
+  hint?: string;
 }) {
   return (
     <div>
@@ -28,8 +32,10 @@ function Text({
         type="text"
         placeholder={placeholder}
         value={value}
+        disabled={disabled}
         onChange={(e) => onChange(field, e.target.value)}
       />
+      {hint ? <div className="field-hint">{hint}</div> : null}
     </div>
   );
 }
@@ -62,11 +68,18 @@ function Select({
   );
 }
 
-export default function NouvelleFicheClient() {
+export default function NouvelleFicheClient({
+  initialData,
+}: {
+  initialData?: ProductSheetData;
+}) {
   const router = useRouter();
-  const [data, setData] = useState<ProductSheetData>({ ...EMPTY_SHEET });
+  const isEditing = !!initialData;
+  const [data, setData] = useState<ProductSheetData>(
+    initialData ? { ...initialData } : { ...EMPTY_SHEET }
+  );
   const [imageFile, setImageFile] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(initialData?.imageUrl ?? null);
   const [submitting, setSubmitting] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -108,7 +121,7 @@ export default function NouvelleFicheClient() {
         setSubmitting(false);
         return;
       }
-      showToast(`Fiche « ${data.ref} » ajoutée au répertoire.`);
+      showToast(isEditing ? `Fiche « ${data.ref} » mise à jour.` : `Fiche « ${data.ref} » ajoutée au répertoire.`);
       router.push("/repertoire");
       router.refresh();
     } catch (e) {
@@ -123,8 +136,12 @@ export default function NouvelleFicheClient() {
     <section>
       <div className="view-head">
         <div>
-          <h1>Nouvelle fiche produit</h1>
-          <p>Renseignez les champs — l&apos;aperçu à droite se met à jour en direct.</p>
+          <h1>{isEditing ? `Modifier la fiche — ${data.ref}` : "Nouvelle fiche produit"}</h1>
+          <p>
+            {isEditing
+              ? "Modifie les champs souhaités — l'aperçu à droite se met à jour en direct."
+              : "Renseignez les champs — l'aperçu à droite se met à jour en direct."}
+          </p>
         </div>
       </div>
 
@@ -137,7 +154,15 @@ export default function NouvelleFicheClient() {
             <div className="fgroup">
               <div className="fgroup-title">Identification</div>
               <div className="frow single">
-                <Text label="Référence MBA Green" field="ref" placeholder="BOXFRIES01ORG" value={data.ref} onChange={set} />
+                <Text
+                  label="Référence MBA Green"
+                  field="ref"
+                  placeholder="BOXFRIES01ORG"
+                  value={data.ref}
+                  onChange={set}
+                  disabled={isEditing}
+                  hint={isEditing ? "Verrouillée en modification (change la fiche, pas la référence)." : undefined}
+                />
               </div>
               <div className="frow single">
                 <Text label="Nom produit (FR)" field="nameFr" placeholder="Boîte frites blanche bristol organic" value={data.nameFr} onChange={set} />
@@ -247,7 +272,7 @@ export default function NouvelleFicheClient() {
             </div>
 
             <button type="button" className="genbtn" onClick={handleSubmit} disabled={submitting}>
-              {submitting ? "Génération en cours…" : "Générer la fiche PDF"}
+              {submitting ? "Enregistrement en cours…" : isEditing ? "Mettre à jour la fiche" : "Générer la fiche PDF"}
             </button>
           </form>
         </div>
@@ -260,7 +285,7 @@ export default function NouvelleFicheClient() {
           </div>
           <div className="preview-actions">
             <button className="btn primary" onClick={handleSubmit} disabled={submitting}>
-              {submitting ? "Enregistrement…" : "Enregistrer & ajouter au répertoire"}
+              {submitting ? "Enregistrement…" : isEditing ? "Mettre à jour la fiche" : "Enregistrer & ajouter au répertoire"}
             </button>
           </div>
         </div>

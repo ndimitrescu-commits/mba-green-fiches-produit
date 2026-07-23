@@ -100,24 +100,41 @@ export async function POST(req: NextRequest) {
     imageUrl,
   };
 
-  // Generate the PDF from the exact same template as the on-screen preview.
-  let pdfUrl: string | null = null;
-  try {
-    const pdfBuffer = await generateSheetPdf(sheetData);
-    const pdfPath = `${ref}.pdf`;
-    const { error: pdfUploadError } = await supabase.storage
-      .from(PRODUCT_PDFS_BUCKET)
-      .upload(pdfPath, pdfBuffer, { contentType: "application/pdf", upsert: true });
-    if (pdfUploadError) {
-      return NextResponse.json({ error: pdfUploadError.message }, { status: 500 });
+  // Some sheets (bulk-imported from the client's Drive) deliberately link to
+  // an original datasheet the client's team made themselves, rather than one
+  // we generated — that's stored as-is in pdf_url. Editing such a sheet (e.g.
+  // via "Modifier cette fiche") must never silently clobber that original
+  // with a freshly generated PDF. Only (re)generate when there's no pdf_url
+  // yet, or the existing one already points at our own storage bucket.
+  const { data: existingRow } = await supabase
+    .from("product_sheets")
+    .select("pdf_url")
+    .eq("ref", ref)
+    .maybeSingle();
+  const existingPdfUrl = (existingRow as { pdf_url: string | null } | null)?.pdf_url ?? null;
+  const isOwnGeneratedPdf = (url: string | null) =>
+    !!url && url.includes(`/storage/v1/object/public/${PRODUCT_PDFS_BUCKET}/`);
+
+  let pdfUrl: string | null = existingPdfUrl;
+  if (!existingPdfUrl || isOwnGeneratedPdf(existingPdfUrl)) {
+    // Generate the PDF from the exact same template as the on-screen preview.
+    try {
+      const pdfBuffer = await generateSheetPdf(sheetData);
+      const pdfPath = `${ref}.pdf`;
+      const { error: pdfUploadError } = await supabase.storage
+        .from(PRODUCT_PDFS_BUCKET)
+        .upload(pdfPath, pdfBuffer, { contentType: "application/pdf", upsert: true });
+      if (pdfUploadError) {
+        return NextResponse.json({ error: pdfUploadError.message }, { status: 500 });
+      }
+      const { data: pub } = supabase.storage.from(PRODUCT_PDFS_BUCKET).getPublicUrl(pdfPath);
+      pdfUrl = pub.publicUrl;
+    } catch (e) {
+      return NextResponse.json(
+        { error: `Échec de la génération du PDF: ${(e as Error).message}` },
+        { status: 500 }
+      );
     }
-    const { data: pub } = supabase.storage.from(PRODUCT_PDFS_BUCKET).getPublicUrl(pdfPath);
-    pdfUrl = pub.publicUrl;
-  } catch (e) {
-    return NextResponse.json(
-      { error: `Échec de la génération du PDF: ${(e as Error).message}` },
-      { status: 500 }
-    );
   }
 
   const insertRow = { ...sheetToInsertRow(sheetData), image_url: imageUrl, pdf_url: pdfUrl };
