@@ -1,6 +1,7 @@
 import type { ProductSheetData } from "@/lib/types";
 import { categoryIconSvg } from "@/lib/productCategories";
 import { ean13Svg, formatEan13Digits } from "@/lib/barcode";
+import { MBA_GREEN_LOGO_BW_PNG_BASE64 } from "@/lib/mbaGreenLogoAsset";
 
 function esc(v: string | null | undefined): string {
   return v === undefined || v === null || v === "" ? "—" : v;
@@ -34,19 +35,13 @@ function fitValueFontSize(text: string): number {
   return 12;
 }
 
-// MBA Green mark for the sticker footer — built as plain SVG (shape + <text>)
-// rather than an HTML div with a CSS clip-path: clip-path + text can render
-// unreliably inside Chromium's print-to-PDF path (text silently disappearing
-// behind the clip), whereas a plain SVG group always prints correctly.
-// Shape matches the real logo: wide flat top, narrower flat bottom (like a
-// bucket/planter viewed from the front), black-and-white for print.
-function mbaGreenLogoSvg(): string {
-  return `<svg width="96" height="98" viewBox="0 0 120 122" xmlns="http://www.w3.org/2000/svg">
-    <path d="M10 14H110L94 116H26L10 14Z" fill="#111"/>
-    <text x="56" y="62" text-anchor="middle" font-family="Inter, sans-serif" font-weight="700" font-size="30" fill="#fff">MBA</text>
-    <text x="97" y="38" text-anchor="middle" font-family="Inter, sans-serif" font-weight="600" font-size="12" fill="#fff">TM</text>
-    <text x="56" y="94" text-anchor="middle" font-family="Inter, sans-serif" font-weight="600" font-size="22" fill="#fff">Green</text>
-  </svg>`;
+// MBA Green mark for the sticker footer — the real logo (client-provided
+// PNG), recolored to pure black-and-white and embedded inline as a base64
+// data URI. This guarantees an exact match to the brand mark (shape,
+// proportions, typography) instead of a hand-drawn approximation, and avoids
+// any network fetch during Puppeteer's print-to-PDF step.
+function mbaGreenLogoImg(): string {
+  return `<img src="data:image/png;base64,${MBA_GREEN_LOGO_BW_PNG_BASE64}" alt="MBA Green" />`;
 }
 
 /**
@@ -78,8 +73,7 @@ export function buildStickerHtml(d: ProductSheetData): string {
       </div>
     </div>
     <div class="sticker-footer">
-      <div class="sticker-logo">${mbaGreenLogoSvg()}</div>
-      <div class="sticker-spacer"></div>
+      <div class="sticker-logo">${mbaGreenLogoImg()}</div>
       <div class="sticker-barcode">
         ${hasEan ? ean13Svg(d.eanBox, { moduleWidth: 2.6, height: 72 }) : `<div style="font-size:12px;color:#999;">EAN indisponible</div>`}
         <div class="sticker-barcode-digits">${formatEan13Digits(d.eanBox)}</div>

@@ -35,7 +35,9 @@ body{
   width:160px; flex-shrink:0; border-right:1.5px solid #111;
   display:flex; align-items:center; justify-content:center;
 }
-.sticker-spacer{ flex:1; }
-.sticker-barcode{ display:flex; flex-direction:column; align-items:center; justify-content:center; padding-right:28px; }
+.sticker-logo img{ width:92px; height:auto; display:block; }
+.sticker-barcode{
+  flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center;
+}
 .sticker-barcode-digits{ font-size:17px; letter-spacing:2px; margin-top:4px; }
 `;
