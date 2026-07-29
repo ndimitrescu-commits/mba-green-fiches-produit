@@ -8,7 +8,7 @@ export const STICKER_CSS = `
 *{box-sizing:border-box;}
 html,body{margin:0;padding:0;}
 body{
-  padding:20px; background:#fff; font-family:'Inter',sans-serif; color:#111;
+  padding:14px; background:#fff; font-family:'Inter',sans-serif; color:#111;
 }
 .sticker{
   width:660px; height:360px;

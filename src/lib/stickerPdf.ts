@@ -48,11 +48,15 @@ export async function generateStickerPdf(data: ProductSheetData): Promise<Buffer
 
   try {
     const page = await browser.newPage();
-    await page.setViewport({ width: 680, height: 420 });
+    // Page size must exactly match the .sticker card (660x360, see
+    // stickerCss.ts) plus its surrounding body padding on every side — any
+    // mismatch here leaves an uneven margin (previously: 0px on the right,
+    // 40px on the bottom, instead of a uniform frame all around).
+    await page.setViewport({ width: 688, height: 388 });
     await page.setContent(buildHtmlDocument(data), { waitUntil: "load" });
     const pdf = await page.pdf({
-      width: "680px",
-      height: "420px",
+      width: "688px",
+      height: "388px",
       printBackground: true,
       margin: { top: 0, bottom: 0, left: 0, right: 0 },
     });
