@@ -10,7 +10,7 @@
  * sélection d'un lien) via className plutôt que style={{}}.
  *
  * Toujours des liens externes (autres outils déployés séparément) :
- * ouverture en nouvel onglet pour garder l'outil courant.
+ * ouverture dans le même onglet (navigation intranet fluide).
  *
  * `active` force le style "sélectionné" même fermé — utilisé ici pour
  * "Autres", puisque cet outil (Fiches produit) en fait partie.
@@ -76,13 +76,10 @@ export function NavDropdown({
             <a
               key={item.href}
               href={item.href}
-              target="_blank"
-              rel="noopener noreferrer"
               onClick={() => setOpen(false)}
               className="mba-dropdown-item"
             >
               {item.label}
-              <span className="arrow">↗</span>
             </a>
           ))}
         </div>
