@@ -10,10 +10,11 @@
  * 10/09/2026 : « même traitement » que GLS/Geodis/Demand planning/
  * Rapports). "Autres" est actif ici puisque Fiches produit en fait partie.
  */
+import { Fragment } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { NavDropdown } from "./NavDropdown";
-import { MENU_GROUPS } from "./intranet-menu";
+import { MENU_GROUPS, SAV_AFTER_GROUP, SAV_HREF } from "./intranet-menu";
 
 
 const NAV_ITEMS: { href: string; label: string }[] = [
@@ -36,7 +37,14 @@ export default function AppHeader() {
               Vue d&apos;ensemble
             </a>
             {MENU_GROUPS.map((group) => (
-              <NavDropdown key={group.label} label={group.label} items={group.items} active={group.label === "Autres"} />
+              <Fragment key={group.label}>
+                <NavDropdown label={group.label} items={group.items} active={group.label === "Autres"} />
+                {group.label === SAV_AFTER_GROUP && (
+                  <a href={SAV_HREF} className="mba-nav-link">
+                    SAV
+                  </a>
+                )}
+              </Fragment>
             ))}
           </nav>
         </div>
