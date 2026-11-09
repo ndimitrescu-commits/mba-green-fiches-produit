@@ -11,6 +11,7 @@ import {
   type ProductSheetRow,
 } from "@/lib/types";
 import { generateSheetPdf } from "@/lib/pdf";
+import { requireSession } from "@/lib/requireSession";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -19,6 +20,9 @@ export const maxDuration = 60;
 // Simple substring search across ref / names / EANs / material, mirroring
 // the prototype's client-side filter behaviour exactly.
 export async function GET(req: NextRequest) {
+  const denied = await requireSession();
+  if (denied) return denied;
+
   const q = req.nextUrl.searchParams.get("q")?.trim() ?? "";
   const supabase = supabaseAdmin();
 
@@ -58,6 +62,9 @@ export async function GET(req: NextRequest) {
 // image if provided, generates the PDF server-side from the same template
 // used in the live preview, uploads the PDF, and returns the saved sheet.
 export async function POST(req: NextRequest) {
+  const denied = await requireSession();
+  if (denied) return denied;
+
   const form = await req.formData();
   const rawData = form.get("data");
   if (typeof rawData !== "string") {
