@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabaseAdmin";
 import { rowToSheet, type ProductSheetRow } from "@/lib/types";
 import { generateStickerPdf } from "@/lib/stickerPdf";
+import { requireSession } from "@/lib/requireSession";
 
 export const runtime = "nodejs";
 export const maxDuration = 30;
@@ -11,6 +12,9 @@ export const maxDuration = 30;
 // pack, product dimensions, category icon) on the fly from the sheet's own
 // structured fields — nothing is stored, it's rendered fresh on every call.
 export async function GET(req: NextRequest) {
+  const denied = await requireSession();
+  if (denied) return denied;
+
   const ref = req.nextUrl.searchParams.get("ref")?.trim() ?? "";
   if (!ref) {
     return NextResponse.json({ error: "Paramètre 'ref' manquant." }, { status: 400 });
